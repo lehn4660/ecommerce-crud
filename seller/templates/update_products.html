@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <select name="product" id="prd1">
+                <option value="">Select Product</option>
+                {% for product in products %}
+                <option value="{{ product.id }}">{{ product.product_name }}</option>
+                {% endfor %}
+                
+            </select>
+          </div>
+        <div class="mb-3">
+          <label class="form-label">Product Name</label>
+          <input name="s_product_name" type="text" class="form-control" id="p_name">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <input name="s_description" type="text" class="form-control" id="p_desc">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Product Stock</label>
+            <input name="s_product_stock" type="text" class="form-control" id="p_stock">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Product Price</label>
+            <input name="s_product_price" type="text" class="form-control" id="p_price">
+           
+          </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+        {{message}}
+    </form>
+    <script>
+        $(document).ready(function(){
+            $.ajaxSetup({
+                headers:{
+                    'X-CSRFToken':$('[name=csrfmiddlewaretoken]').val()
+                }
+            })
+        })
+        $('#prd1').change(function(){
+            product_id = this.value
+            $.ajax({
+                type:'POST',
+                url:'{% url "seller:update_stock" %}',
+                data:{
+                    'id':product_id
+                },
+                success:function(response){
+                    console.log(response.data)
+                    data = response.data
+                    $('#p_name').val(data[0].product_name)
+                    $('#p_desc').val(data[0].description)
+                    $('#p_stock').val(data[0].product_stock)
+                    $('#p_price').val(data[0].product_price)
+                }
+            }) 
+        })
+
+    </script>
+</body>
+</html>
